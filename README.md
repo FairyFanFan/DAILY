@@ -1,5 +1,15 @@
-<<<<<<< HEAD
+
 # Dart
+
+[toc]
+## 关于类的重点
+
+- 继承 extends
+- 抽象类 abstract
+- 接口 implements： 我们只想要A中的接口定义不想要它的实现，那么用implements
+- 类似多继承 mixins
+- 泛型
+- extends -> mixins -> implements, 这三种可同时实现，但有先后顺序
 
 ## dart数据类型
 
@@ -203,11 +213,14 @@ fn(100);
     b(); // 126
     ```
 
-## dart是一种类和单继承的语言
+## dart是一种类和单继承的语言，可利用mixins实现类似多继承
 
 - 类的首字母要大写
 - 封装、继承、多态
 - 默认属性、类调用内部属性、实例化、构造函数、简写构造函数
+- 构造函数不能继承
+- 子类重写超类的方法，要用@override
+- 子类调用超类的方法，要用super
 
 ```dart
 class Person{
@@ -260,6 +273,9 @@ class Person2{
 ### 命名构造函数
 
 - 构造函数可以写多个,默认构造函数只能一个，命名构造函数可以多个
+- 注意：命名构造函数 区别于 类里面的普通函数，写法都不一样
+- 命名构造函数不可继承，
+- 如果子类想要有和父类一样的命名构造函数，那就写个同名的（通常也会在子类的命名构造函数里，调用父类的同名命名构造函数
 
 ```dart
 class Person3{
@@ -359,6 +375,8 @@ console.log(date.toString())
 ```
 
 - 使用static来实现类级别的变量和函数
+- 静态变量可以通过外部直接访问,不需要将类实例化
+- 不能用this，因为静态变量实际上存在于类中,而不是实例本身
 
     ```dart
     class Person() {
@@ -510,13 +528,232 @@ console.log(date.toString())
 
 ### Dart中的抽象类
 
+- 主要用于定义标准，也可以实现抽象类接口
 - 关键词abstract
+- 抽象类不能被实例化，只有继承它的子类可以
+- 子类可以继承抽象类，但子类继承抽象类必须得实现里面的抽象方法和方法
+- extends抽象类 和 implements的区别
+    > 1、如果要复用抽象类里面的方法，并且要用抽象方法约束自类的话我们就用extends继承抽象类
+    > 2、如果只是把抽象类当做标准的话我们就用implements实现抽象类
 
-### Dart 一个类实现多个接口implements
+    ```dart
+    // 案例：定义一个Animal 类要求它的子类必须包含eat方法
+    abstract class Animal{
+        // 抽象类中可以有抽象方法，也可以有普通方法，注意写法不一样，
+        eat();  //抽象方法
+        run();  //抽象方法
+        printInfo(){ // 注意 和抽象方法写法不一样
+            print('我是一个抽象类里面的普通方法'); // 公共方法
+        }
+    }
+    class Dog extends Animal{
+        @override
+        eat() { // 子类继承抽象类必须得实现里面的抽象方法和方法
+            print('小狗在吃骨头');
+        };
+        @override
+        run() {
+            print('小狗在跑');
+        };
+    }
+    main(){
+        Dog d=new Dog();
+        d.eat(); // 小狗在吃骨头
+        d.run(); // 小狗在跑
+        d.printInfo(); // 直接调用抽象类中的普通方法
+        // Animal a=new Animal();   //抽象类没法直接被实例化
+    }
+
+    ```
+
+### Dart类中的多态
+
+- 允许将子类类型的指针赋值给父类类型的指针, 同一个函数调用会有不同的执行效果 。
+- 子类的实例赋值给父类的引用。
+- 多态就是父类定义一个方法不去实现，让继承他的子类去实现，每个子类有不同的表现。
+
+    ```dart
+        abstract class Animal{
+            eat();   //抽象方法
+        }
+        class Dog extends Animal{
+            @override
+            eat() {
+                print('小狗在吃骨头');
+            }
+            run() {
+                print('小狗在跑');
+            }
+        }
+        main(){
+            Animal d = new Dog(); // 注意：不同于Dog d=new Dog()，把子类的实例赋值给父类的引用
+            d.eat(); // 小狗在吃骨头
+            // d.run();  // 访问不到
+        }
+    ```
+
+### Dart接口
+
+- implements关键字
+- 普通类和抽象类都可以实现接口，而抽象类可以定义抽象方法，所以建议用抽象类定义接口
+- 在子类中实现接口的时候 必须要实现父类中属性和方法。
+
+    ```dart
+    // 定义一个DB库 支持 mysql mssql , mysql  mssql2个类里面都有同样的方法
+    abstract class Db{   //当做接口   接口：就是约定 、规范
+        String uri;      //数据库的链接地址
+        add(String data);
+        delete();
+    }
+
+    class Mysql implements Db{
+        @override
+        String uri; // 不加会报错的 因为它的父类有这个属性
+        Mysql(this.uri); // 构造函数
+
+        @override
+        add(data) {
+            // TODO: implement add
+            print('这是mysql的add方法'+data);
+        }
+
+        @override
+        delete() {
+            // TODO: implement delete
+            return null;
+        }
+
+        remove() {
+            print('子类中也可以写自己的方法');
+        }
+    }
+
+    class MsSql implements Db{
+        @override
+        String uri;
+        @override
+        add(String data) {
+            print('这是mssql的add方法'+data);
+        }
+
+        @override
+        delete() {
+            // TODO: implement delete
+            return null;
+        }
+    }
+
+    main() {
+        Mysql mysql=new Mysql('xxxxxx');
+        mysql.add('1243214');
+
+        Mysql mysql=new Mysql();
+        mysql.uri = 'xxxxxx';
+        mysql.add('6666777');
+    }
+    ```
 
 > 不能实现多继承
 
+#### Dart中一个类实现多个接口implements
+
+    ```dart
+    abstract class A{
+        String name;
+        printA();
+    }
+
+    abstract class B{
+        printB();
+    }
+
+    class C implements A,B{   // C要实现所有A，B的方法和属性
+        @override
+        String name;  
+        @override
+        printA() {
+            print('printA');
+        }
+        @override
+        printB() {
+            // TODO: implement printB
+            return null;
+        }
+    }
+    ```
+
 ### Dart mixins类似继承
+
+- 混入
+- 实现 类似多继承 的功能 （dart中没法实现多继承，可以实现多接口）
+- 作为mixins的类只能继承自Object，不能继承其他类
+- 作为mixins的类不能有构造函数，可以让C继承某个类再mixins A B
+- 一个类可以mixins多个mixins类
+- mixins绝不是继承，也不是接口，而是一种全新的特性
+- A B 中有同样的方法，后覆盖前
+
+    ```dart
+        class A {
+            String info="this is A";
+            void printA(){
+                print("A");
+            }
+        }
+        class B {
+            void printB(){
+                print("B");
+            }
+        }
+        class C with A,B{ // A，B不能继承某个Object,也不能有构造函数
+        }
+    ```
+
+    ```dart
+        class Person{
+            String name;
+            num age;
+            Person(this.name,this.age);
+            printInfo(){
+                print('${this.name}----${this.age}');
+            }
+            void run(){
+                print("Person Run");
+            }
+        }
+        class A {
+            String info="this is A";
+            void printA(){
+                print("A");
+            }
+            void run(){
+                print("A Run");
+            }
+        }
+        class B {  
+            void printB(){
+                print("B");
+            }
+            void run(){
+                print("B Run");
+            }
+        }
+        class C extends Person with B,A{
+            C(String name, num age) : super(name, age);
+        }
+
+        void main(){  
+            var c=new C('张三',20);  
+            c.printInfo();
+            c.run(); // A Run ,不管是继承的父类还是mixins父类，特性都是 后来者居上
+            // c.printB();
+            // print(c.info);
+            c.run();
+            // mixin类型 超类的子类型， A B 是C的超类
+            print(c is C);    //true
+            print(c is A);    //true
+            print(c is B);   //true
+        }
+    ```
 
 ### Dart 泛型
 
@@ -524,15 +761,98 @@ console.log(date.toString())
 
 ```dart
 // 泛型方法
+    T getData<T>(T value){ // 开头的T是指定返回的结果必须为T类型
+        return value;
+    }
+    void main(){
+        print(getData<int>(12));
+    }
 // 泛型类
+    //    class PrintClass{
+    //       List list=new List<int>();
+    //       void add(int value){
+    //           this.list.add(value);
+    //       }
+    //       void printInfo(){
+    //           for(var i=0;i<this.list.length;i++){
+    //             print(this.list[i]);
+    //           }
+    //       }
+    //  }
+    // 上述转换成泛型
+    class PrintClass<T>{
+        List list=new List<T>();
+        void add(T value){
+            this.list.add(value);
+        }
+        void printInfo(){
+            for(var i=0;i<this.list.length;i++){
+                print(this.list[i]);
+            }
+        }
+    }
+
+    PrintClass p = new PrintClass<int>();
+    // PrintClass p = new PrintClass<String>();
+    p.add(1);
+    p.printInfo();
+
 // 泛型接口
+    /*
+        案例:
+        实现数据缓存的功能：有文件缓存、和内存缓存。内存缓存和文件缓存按照接口约束实现。
+        1、定义一个泛型接口 约束实现它的子类必须有getByKey(key) 和 setByKey(key,value)
+        2、要求setByKey的时候的value的类型和实例化子类的时候指定的类型一致  
+    */
+    abstract class Cache<T>{
+        getByKey(String key);
+        void setByKey(String key, T value);
+    }
+
+    class FlieCache<T> implements Cache<T>{
+        @override
+        getByKey(String key) {
+            return null;
+        }
+
+        @override
+        void setByKey(String key, T value) {
+        print("我是文件缓存 把key=${key}  value=${value}的数据写入到了文件中");
+        }
+    }
+
+    class MemoryCache<T> implements Cache<T>{
+        @override
+        getByKey(String key) {
+            return null;
+        }
+        @override
+        void setByKey(String key, T value) {
+            print("我是内存缓存 把key=${key}  value=${value} -写入到了内存中");
+        }
+    }
+    void main(){
+        // MemoryCache m=new MemoryCache<String>();
+        //  m.setByKey('index', '首页数据');
+
+        MemoryCache m=new MemoryCache<Map>();
+        m.setByKey('index', {"name":"张三","age":20});
+    }
 ```
 
 ### Dart 库
 
 - 自定义库
+  - import 'lib/xxx.dart';
 - 内置库
-- 第三方库
-=======
-# DAILY
->>>>>>> 35a86da7ecc0ef4134f783ec4f6b0c556e9b0c1e
+  - import 'dart:math';
+  - import 'dart:io';
+  - import 'dart:convert' as convert;
+- 第三方库 Pub包管理系统中的库  
+  - https://pub.dev/packages
+  - https://pub.flutter-io.cn/packages
+- 库命名冲突
+  - as
+- 部分导入
+  - import 'lib/myMath.dart' show getAge; 只引入getAge方法
+  - import 'lib/myMath.dart' hide getName;只隐藏getName方法
