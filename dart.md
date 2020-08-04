@@ -1,6 +1,8 @@
 
 # Dart
 
+# 有待解决@immutable interface
+
 [toc]
 ## 关于类的重点
 
@@ -276,6 +278,7 @@ class Person2{
 - 注意：命名构造函数 区别于 类里面的普通函数，写法都不一样
 - 命名构造函数不可继承，
 - 如果子类想要有和父类一样的命名构造函数，那就写个同名的（通常也会在子类的命名构造函数里，调用父类的同名命名构造函数
+- AppTheme._()是一个命名构造函数。在dart中，如果前导字符是下划线，则该函数/构造函数对库是私有的。因此写此构造函数的人根本不打算完全调用该构造函数
 
 ```dart
 class Person3{
@@ -293,6 +296,41 @@ class Person3{
 }
 var p3 = new Person3.setInfo('李四', 30);
 p3.getInfo(); // '李四', 30
+```
+
+### 工厂构造器——Factory constructors
+
+- 使用factory关键字来修饰构造器，不一定每次都会生成新的类的实例。比如，工厂构造器可能会返回缓存中的某个实例，或者它返回子类的一个实例。
+- 注意：工厂构造器不能访问this。
+
+```dart
+class Logger {
+  final String name;
+  bool mute = false;
+
+  // _cache is library-private, thanks to
+  // the _ in front of its name.
+  static final Map<String, Logger> _cache =
+      <String, Logger>{};
+
+  factory Logger(String name) {
+    if (_cache.containsKey(name)) {
+      return _cache[name];
+    } else {
+      final logger = Logger._internal(name);
+      _cache[name] = logger;
+      return logger;
+    }
+  }
+
+  Logger._internal(this.name);
+
+  void log(String msg) {
+    if (!mute) print(msg);
+  }
+}
+var logger = Logger('UI');
+logger.log('Button clicked');
 ```
 
 ### Dart私有公有属性方法
@@ -319,7 +357,7 @@ class Person() {
 }
 Person p = new Person('私有属性');
 p.execName();
-a.execRun(); // 简介访问私有方法
+a.execRun(); // 间接访问私有方法
 ```
 
 - dart类中的getter setter 修饰符的使用
