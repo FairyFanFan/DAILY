@@ -455,6 +455,8 @@ Person.getInfo();
 
 ## ts中的接口
 
+- interface
+
 - 用来定义标准，意义类似abstract
 
 - 接口比抽象类更强大，可以规范方法 属性 函数 类等
