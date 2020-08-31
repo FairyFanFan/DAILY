@@ -1,14 +1,14 @@
 function lazy(value) {
-    return new lazyWrapper(value);  //❌ ? lazyWrapper类名，小写
+    return new LazyWrapper(value);  //❌ ? lazyWrapper类名，小写
 }
 
 MAX_ARRAY_LENGTH = 999;
 LAZY_FILTER_FLAG = 1;
-// let MAX_TAKECOUNT = 9999; // lodash ? 最大多少 ❌ 位置放错了 变量提升 或者放在最上面
+// let MAX_TAKECOUNT = 9999; // lodash 最大多少 ❌ 位置放错了 变量提升 或者放在最上面
 // var MAX_TAKECOUNT = 9999;
 // let FILTER_FLAG = 1;
 
-function lazyWrapper(value) {
+function LazyWrapper(value) {
     this.__wrapper__ = value;
     this.__iteratees__ = [];
     this.__takeCounts__ = MAX_ARRAY_LENGTH;
@@ -20,16 +20,16 @@ function filter(iteratee) {
         iteratee: iteratee,
         type: LAZY_FILTER_FLAG
     })
-    return this; // ? 链式调用
+    return this; // 链式调用
 }
-lazyWrapper.prototype.filter = filter;
+LazyWrapper.prototype.filter = filter;
 
 // take
 function take(n) {
     this.__takeCounts__ = n;
     return this;
 }   
-lazyWrapper.prototype.take = take;
+LazyWrapper.prototype.take = take;
 
 // value
 
@@ -49,8 +49,10 @@ function value(){
     // 遍历数据
     outer: // 标签语句 
     while((length)-- && resultIndex < this.__takeCounts__){ // 循环外围数组中的数据 // ❌array.length--报错
-
-        let cur_value = array[index++]; // 🌈优化
+        // ? ❌ ⚠️数组内循环数据的条件：结果数组的长度 没必要 大于我们要的takeCount
+        // 保险杠 ：数组走完了还是没找到目标数量takeCount的数据 那就洗洗睡吧
+        // ❌ let index = 0; 不能放在循环里
+        let cur_value = array[index++]; // ❌ let cur_value = array[index];
         // index++;
 
         let interIndex = -1;
@@ -76,21 +78,26 @@ function value(){
             // type 为了处理不同方法的后续操作而定
             // 🌈 break默认是结束当前循环，有时我们在使用循环时，想通过内层循环里的语句直接跳出外层循环。。return也可以结束一个循环，但与continue和break不同的是，return直接结束整个方法，不管这个return处于多少层循环之内
         }
-        
-        result[resultIndex++] = cur_value;
+        result[resultIndex++] = cur_value; // ❌ 这里不能return
 
         // 这里不能写index
     }
     return result;
 }
 
-lazyWrapper.prototype.value = value; // ❌漏掉
+LazyWrapper.prototype.value = value; // ❌漏掉
 
 
-let testArr = [10,30,19,2,5,6,7,99];
-let testRes = lazy(testArr).filter(i => i< 10).take(2).value();
+let testArr = [4, 15, 20, 7, 3, 13, 2, 20];
+let testRes = lazy(testArr).filter(item => {console.log('filter: item =' + item); return item < 10 }).take(3).value();
 console.log(testRes);
 
+// filter: item =4
+// filter: item =15
+// filter: item =20
+// filter: item =7
+// filter: item =3
+// [4, 7, 3]
 
 // 标签语句
 // loop1:
