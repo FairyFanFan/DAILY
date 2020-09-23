@@ -670,7 +670,7 @@ Db.update(a, 11);
 interface DBI {
     add(info:T):boolean;
 }
-// 定义一个操作mysql数据库的类 
+// 定义一个操作mysql数据库的类
 // ⚠️注意：要实现泛型接口 这个类也要是一个泛型类
 class Mysql<T> implements DBI{
     add(info:T) {
