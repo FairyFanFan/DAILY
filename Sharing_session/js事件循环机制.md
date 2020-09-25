@@ -1,6 +1,7 @@
 # 事件循环机制
 
-- 遗漏： 代码延申，堆 栈， js的运行机制
+- 遗漏： 代码延申，堆 栈， js的运行机制，为啥先从宏任务开始,什么时候开始执行
+- events.js https://gist.github.com/noonat/368053
 
 - ❓ 问题一
 
@@ -89,23 +90,29 @@ process.nextTick(() => {
 > 主线程类似一个加工厂，它只有一条流水线，待执行的任务就是流水线上的原料，只有前一个加工完，后一个才能进行。event loops就是把原料放上流水线的工人。只要已经放在流水线上的，它们会被依次处理，称为同步任务。一些待处理的原料，工人会按照它们的种类排序，在适当的时机放上流水线，这些称为异步任务。
 > js 有一个主线程 main thread，和调用栈 call-stack 也称之为执行栈。所有的任务都会放到调用栈中等待主线程来执行。待执行的任务就是流水线上的原料，只有前一个加工完，后一个才能进行。event loops就是把原料放上流水线的工人，协调用户交互，脚本，渲染，网络这些不同的任务。
 
-<!-- ![avatar](222.png)  -->
-<!-- - 如上图为事件循环示例图（或js运行机制图），流程如下：
+![avatar](js运行机制.png)
+
+- js运行机制图，流程如下：
+
   - step1：主线程读取js代码，此时为同步环境，形成相应的堆和执行栈；
+
   - step2: 主线程遇到异步任务，指给对应的异步进程进行处理（WEB API）;
-  - step3: 异步进程处理完毕（Ajax返回、DOM事件处罚、Timer到等），将相应的异步任务推入任务队列；
+
+  - step3: 异步进程处理完毕（Ajax返回、DOM事件、Timer等），将相应的异步任务推入任务队列；
+
   - step4: 主线程执行完毕，查询任务队列，如果存在任务，则取出一个任务推入主线程处理（先进先出）；
+
   - step5: ***重复执行step2、3、4；称为事件循环***。
-　　执行的大意：同步环境执行(step1) -> 事件循环1(step4) -> 事件循环2(step4的重复)…
-其中的异步进程有：
-a、类似onclick等，由浏览器内核的DOM binding模块处理，事件触发时，回调函数添加到任务队列中；
-b、setTimeout等，由浏览器内核的Timer模块处理，时间到达时，回调函数添加到任务队列中；
-c、Ajax，由浏览器内核的Network模块处理，网络请求返回后，添加到任务队列中 -->
+
+> 延伸阅读：其中的异步进程有：
+> a、类似onclick等，由浏览器内核的DOM binding模块处理，事件触发时，回调函数添加到任务队列中；
+> b、setTimeout等，由浏览器内核的Timer模块处理，时间到达时，回调函数添加到任务队列中；
+> c、Ajax，由浏览器内核的Network模块处理，网络请求返回后，添加到任务队列中 -->
 
 ### 微任务 宏任务
 
 > 一个event loop里有一个或者多个task队列（宏任务），只有一个microtask 队列。
-> 延伸: Promise的定义在 ECMAScript规范而不是在HTML规范中，但是ECMAScript规范中有一个jobs的概念和microtasks很相似。在Promises/A+规范的Notes 3.1中提及了promise的then方法可以采用“宏任务（macro-task）”机制或者“微任务（micro-task）”机制来实现。所以开头提及的promise在不同浏览器的差异正源于此，有的浏览器将then放入了macro-task队列，有的放入了micro-task 队列。
+> 延伸阅读: Promise的定义在 ECMAScript规范而不是在HTML规范中，但是ECMAScript规范中有一个jobs的概念和microtasks很相似。在Promises/A+规范的Notes 3.1中提及了promise的then方法可以采用“宏任务（macro-task）”机制或者“微任务（micro-task）”机制来实现。所以开头提及的promise在不同浏览器的差异正源于此，有的浏览器将then放入了macro-task队列，有的放入了micro-task 队列。
 
 - 微任务： promise.then、process.nextTick、Object.observe(已废弃)、MutationObserver(html5新特性)
 
@@ -144,13 +151,18 @@ while(true) {
     // 一次tick
     if (eventLoop.length > 0) {
         event = eventLoop.shift() // 拿到队列中下一个事件
-        event() // 执行。这代码里面可能产生新的event放在eventLoop中
+        // 执行。这代码里面可能产生新的event放在eventLoop中
+        try {
+          event();
+        } catch (err) {
+          reportError(err);
+        }
     }
 }
 // 事件循环取macroTaskQueue
 // 微任务队列只有一个，而且每一次tick，都会清空微任务队列
 for (macroTask of macroTaskQueue) {
-    handleMacroTask();
+    handleMacroTask(macroTask);
 
     for (microTask of microTaskQueue) {
         handleMicroTask(microTask);
