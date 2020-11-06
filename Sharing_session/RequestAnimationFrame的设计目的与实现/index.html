@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RAF的设计目的与实现</title>
+        <!-- <script src="js_01.js"></script> -->
+    </head>
+    <body style="position: relative; top: 0px; left:0px;">
+        RAF的设计目的与实现
+        <div class="blue-box" style="position: absolute; left:0; top:20px;width: 100px; height: 100px; background:blue"></div>
+        <div class="red-box" style="position: absolute; left:0; top:120px;width: 100px; height: 100px; background:red"></div>
+        
+        <div id="list"></div>
+        <div id="container"></div>
+    </body>
+  </html>
+<script>
+let total = 200;
+let ul = document.querySelector('#list');
+
+// console.log(Date.now());
+// for(var i = 0; i < total + 1 ; i++) {
+//   let li = document.createElement('li');
+//   li.innerText = 'item:' + i;
+//   box.appendChild(li);
+// }
+// console.log(Date.now()); // ❌
+// setTimeout(_ => {
+//   console.log(Date.now());
+// }, 0)
+let pageIndex = 0;
+let pageSize = 20;
+let pagination = total / pageSize;
+
+function loop() {
+    var li = null;
+
+    setTimeout(() => {
+        for (var index = 0; index < pageSize + 1; index++) {
+            li = document.createElement('li');
+            li.innerText = 'item ' + (pageIndex * pageSize + index);
+            ul.appendChild(li);
+        }
+        pageIndex++;
+
+        if (pageIndex < pagination) requestAnimationFrame(loop); // ❌
+    },0);
+};
+requestAnimationFrame(loop);
+
+</script>
