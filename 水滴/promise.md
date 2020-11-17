@@ -1,5 +1,15 @@
-# promise面试题
-https://www.cnblogs.com/lunlunshiwo/p/8852984.html
+# Promise
+
+- Promise 是一个对象，从它可以获取异步操作的消息。
+
+- Promise 会吃掉错误:  Promise 内部的错误不会影响到 Promise 外部的代码, 即不阻塞
+
+- 自己的理解：js单线程，异步事件是运行环境的事件循环帮它实现的，在项目里前端工作者们需要用promise async 这些得到并控制某些操作时机
+
+## promise面试题
+
+- https://www.cnblogs.com/lunlunshiwo/p/8852984.html
+
 ```js
 // e.g.1
 fn = new Promise(function (resolve, reject) {

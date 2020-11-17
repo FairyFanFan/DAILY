@@ -2,11 +2,16 @@
 
 - 参考[https://juejin.im/post/6844903567967387656] [https://segmentfault.com/a/1190000018017796] [https://github.com/haizlin/fe-interview/issues/92]
 
-- 目的： 改变函数执行时的上下文，再具体一点就是改变函数运行时的this指向，最终是为了***复用***
+- 目的： 改变函数执行时的上下文，再具体一点就是改变函数运行时的this指向并执行函数，最终是为了***复用***
+
+- 理解：fn.call(obj);
+  - fn(即this)绑定到obj，或者说obj『继承』了fn的属性和方法。
+  - obj拥有了执行fn方法的能力，并且this是指向obj的.
 
 - 区别： 传参不同，返回值不同, 注意：bind在IE6~8下不兼容。
 
 ```js
+// e.g.1
 function add (a, b) {
     return a + b;
 }
@@ -19,6 +24,18 @@ add.bind(sub, 5, 3); // 这时，并不会返回 8
 add.bind(sub, 5, 3)(); // 调用后，返回 8
 add.apply(sub, [5, 3]);
 add.call(sub, 5, 3);
+// e.g.2
+var foo = {
+    name: 'joker',
+    showName: function() {
+    console.log(this.name);
+    }
+}
+var bar = {
+    name: 'rose'
+}
+foo.showName.call(bar);
+
 ```
 
 ## bind
