@@ -1,6 +1,7 @@
 # 使用 requestAnimationFrame 替代 throttle 优化页面性能
 
 - https://jinlong.github.io/2016/04/24/Debouncing-and-Throttling-Explained-Through-Examples/
+- https://cdflove9426.github.io/js/throttling.html#%E8%8A%82%E6%B5%81%EF%BC%88throttling%EF%BC%89
 
 - 与 _.throttle(dosomething, 16) 等价
 
@@ -38,20 +39,6 @@ window.addEventListener('scroll', onScroll)
 
 - 对上述代码进行封装得到 animationFrame 函数：
 
-let lock = {}
-function animationFrame (callback = (time) => {}, key = 'default') {
-    if (lock[key]) { return false }
-    lock[key] = true
-    window.requestAnimationFrame((time) => {
-        lock[key] = false
-        callback(time)
-    })
-    return true
-}
-// 调用
-window.addEventListener('scroll', () => { animationFrame((time) => doAnimation(time)) })
-
-
 ## 缺点
 
 - 动画的开始/取消需要开发者自己控制，不像 ‘.debounce’ 或 ‘.throttle’由函数内部处理。
@@ -78,35 +65,124 @@ window.addEventListener('scroll', () => { animationFrame((time) => doAnimation(t
 
 ```js
 // jxc-pc项目中的throttle改写
-export function throttle(func, delay) {
-    /*
-    * 函数节流
-    * @params {Function} func - 要执行的函数
-    * @params {Number} delay - 节流单位时间（单位：毫秒）
-    * @returns {Function}
-    */
-    let last;
-    let timeId;
+export function throttle(func, delay, deadline) { // 🍊优化2后
+    // 🤔为啥可以保存变量last
+    let last; // 🍊 优化2后 let last = new Date().getTime();
+    let timeId; // 🍊 优化1后
     return function(args) {
         let self = this;
         let now = new Date().getTime();
-
-        if (last && now < last + delay) { // delay做什么？？？delay就是16.7ms
-            // clearTimeout(timeId);
-            // timeId = setTimeout(() => {
-            //     last = now;
-            //     func.apply(self, arguments);
-            // }, delay);
-            window.cancelAnimationFrame(timeId);
-            timeId = window.requestAnimationFrame(now => {
+        clearTimeout(timeId); // 🍊优化1后
+        if (last && now < last + delay) { // 🌹 优化2 now - last < deadline;
+            // clearTimeout(timeId); // 🌹优化1
+            timeId = setTimeout(() => {
                 last = now;
                 func.apply(self, arguments);
-            })
+            }, delay);
         } else {
             last = now;
-            // func.apply(self, arguments);
             func.apply(self, arguments);
         }
     };
 }
+// 实际想绑定在 scroll 事件上的 handler
+function realFunc(){
+    console.log("Success");
+}
+window.addEventListener('scroll',throttle(realFunc,500,1000));
+```
+
+## 改造
+
+- 简单的节流函数
+
+```js
+function throttle(func, wait, mustRun) {
+    var timeout,
+        startTime = new Date();
+
+    return function() {
+        var context = this,
+            args = arguments,
+            curTime = new Date();
+
+        clearTimeout(timeout);
+        // 如果达到了规定的触发时间间隔，触发 handler
+        if(curTime - startTime >= mustRun){
+            func.apply(context,args);
+            startTime = curTime;
+        // 没达到触发间隔，重新设定定时器
+        }else{
+            timeout = setTimeout(func, wait);
+        }
+    };
+};
+// 实际想绑定在 scroll 事件上的 handler
+function realFunc(){
+    console.log("Success");
+}
+window.addEventListener('scroll',throttle(realFunc,500,1000));
+
+```
+
+- rAF
+
+- 采用了节流函数requestAnimationFrame
+
+```js
+throttle(func, xx, 1000/60) //xx 代表 xx ms内不会重复触发事件 handler
+var ticking = false; // rAF 触发锁
+function onScroll(){
+  if(!ticking) {
+    requestAnimationFrame(realFunc);
+    ticking = true;
+  }
+}
+function realFunc(){
+    // do something...
+    console.log("Success");
+    ticking = false;
+}
+// 滚动事件监听
+window.addEventListener('scroll', onScroll);
+```
+
+```js
+// 优化
+let lock = {}
+function animationFrame (callback = (time) => {}, key = 'default') {
+    if (lock[key]) { return false }
+    lock[key] = true
+    window.requestAnimationFrame((time) => {
+        lock[key] = false
+        callback(time)
+    })
+    return true
+}
+// 调用
+window.addEventListener('scroll', () => { animationFrame((time) => doAnimation(time)) })
+```
+
+- 兼容性写法
+
+```js
+var scrolling = false;
+$(window).on('scroll', function(){
+    if( !scrolling ) {
+        scrolling = true;
+        (!window.requestAnimationFrame)
+            ? setTimeout(autoHideHeader, 250)
+            : requestAnimationFrame(autoHideHeader);
+    }
+});
+function resize() {
+    canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+}
+
+var RAF = (function() {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) {
+          window.setTimeout(callback, 1000 / 60);
+        };
+  })();
 ```

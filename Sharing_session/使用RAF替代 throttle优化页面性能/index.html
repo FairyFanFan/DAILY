@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RAF的替代throttle</title>
+    </head>
+    <body>
+        <div style="height: 1000px"></div>
+    </body>
+  </html>
+<script>
+function throttle(func, delay, deadline) { // 🍊优化2后
+    // 🤔为啥可以保存变量last
+    let last; // 🍊 优化2后 let last = new Date().getTime();
+    let timeId; // 🍊 优化1后
+    return function(args) {
+        let self = this;
+        let now = new Date().getTime();
+        clearTimeout(timeId); // 🍊优化1后
+        if (last && now < last + deadline) { // 🌹 优化2 now - last < deadline;
+            // clearTimeout(timeId); // 🌹优化1
+            timeId = setTimeout(() => {
+                last = now;
+                func.apply(self, arguments);
+            }, delay);
+        } else {
+            last = now;
+            func.apply(self, arguments);
+        }
+    };
+}
+// 实际想绑定在 scroll 事件上的 handler
+function realFunc(){
+    console.log("Success");
+}
+window.addEventListener('scroll',throttle(realFunc,500,1000));
+// function throttle(func, wait, mustRun) {
+//     var timeout,
+//         startTime = new Date();
+//         console.log('startTime', startTime);
+//     return function() {
+//         var context = this,
+//             args = arguments,
+//             curTime = new Date();
+//         console.log('curTime', curTime);
+
+//         clearTimeout(timeout);
+//         // 如果达到了规定的触发时间间隔，触发 handler
+//         if(curTime - startTime >= mustRun){
+//             func.apply(context,args);
+//             console.log('-----startTime = curTime', startTime, curTime);
+//             startTime = curTime;
+//         // 没达到触发间隔，重新设定定时器
+//         }else{
+//             timeout = setTimeout(func, wait);
+//         }
+//     };
+// };
+// // 实际想绑定在 scroll 事件上的 handler
+// function realFunc(){
+//     console.log("Success");
+// }
+// window.addEventListener('scroll',throttle(realFunc,10,16.7));
+
+
+// -------------------------------
+// var ticking = false; // rAF 触发锁
+ 
+// function onScroll(){
+//   if(!ticking) {
+//     requestAnimationFrame(realFunc);
+//     ticking = true;
+//   }
+// }
+ 
+// function realFunc(){
+//     // do something...
+//     console.log("Success");
+//     ticking = false;
+// }
+// // 滚动事件监听
+// window.addEventListener('scroll', onScroll, false);
+</script>

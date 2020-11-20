@@ -1,7 +1,5 @@
 # 事件循环机制
 
-- 遗漏： js 的运行机制，为啥先从宏任务开始,什么时候开始执行
-
 - ❓ 问题一: demo 运行顺序
 
   > 补充两点
@@ -75,6 +73,19 @@
   - 4. 从 Microtask 队列中取队首(在队列时间最长)的任务进去事件队列执行,执行完后，跳到 3
 
   - 其中，在执行代码过程中新增的 microtask 任务会在当前事件循环周期内执行，而新增的 macrotask 任务只能等到下一个事件循环才能执行了。
+
+var eventLoop = [];
+while(true) {
+  var event = eventLoop.shift();
+  event();
+}
+
+for (mac of macQueen) {
+  handleMac();
+  for (mic of micQueen) {
+    handleMic();
+  }
+}
 
 
 ## * 未来填坑系列讲解

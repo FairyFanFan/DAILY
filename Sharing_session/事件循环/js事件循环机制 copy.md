@@ -40,6 +40,7 @@ function fn() {
 ```
 
 > 补充两点
+> requestAnimationFrame 每一帧必定会执行，requestIdleCallback 是检测浏览器空闲来执行任务。
 > 1、4、6、3、12、8、2、11、10、9、7
 
 

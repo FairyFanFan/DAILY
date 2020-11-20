@@ -8,45 +8,45 @@
     </head>
     <body style="position: relative; top: 0px; left:0px;">
         RAF的设计目的与实现
-        <div class="blue-box" style="position: absolute; left:0; top:20px;width: 100px; height: 100px; background:blue"></div>
-        <div class="red-box" style="position: absolute; left:0; top:120px;width: 100px; height: 100px; background:red"></div>
-        
         <div id="list"></div>
-        <div id="container"></div>
+        <p></p>
     </body>
   </html>
 <script>
-let total = 200;
-let ul = document.querySelector('#list');
+let now = Date.now();
+// 插入十万条数据
+// for
+// setTimeout
+// raf
+// fragment
 
-// console.log(Date.now());
-// for(var i = 0; i < total + 1 ; i++) {
-//   let li = document.createElement('li');
-//   li.innerText = 'item:' + i;
-//   box.appendChild(li);
-// }
-// console.log(Date.now()); // ❌
-// setTimeout(_ => {
-//   console.log(Date.now());
-// }, 0)
-let pageIndex = 0;
+
+
+
+
+const total = 100000;
 let pageSize = 20;
+let pageIndex = 0;
 let pagination = total / pageSize;
-
+// 获取容器
+let ul = document.querySelector('#list');
+// 将数据插入容器中
+// for (let i = 0; i < total; i++) {
+//     let li = document.createElement('li');
+//     li.innerText = i;
+//     ul.appendChild(li);
+// }
 function loop() {
     var li = null;
-
-    setTimeout(() => {
-        for (var index = 0; index < pageSize + 1; index++) {
-            li = document.createElement('li');
-            li.innerText = 'item ' + (pageIndex * pageSize + index);
-            ul.appendChild(li);
-        }
-        pageIndex++;
-
-        if (pageIndex < pagination) requestAnimationFrame(loop); // ❌
-    },0);
-};
+    let fragment = document.createDocumentFragment();
+    for (let i = 0; i < pageSize + 1; i++) {
+        let li = document.createElement('li');
+        li.innerText = `${pageIndex * pageSize + i}`;
+        fragment.appendChild(li);
+    }
+    ul.appendChild(fragment);
+    pageIndex++;
+    if (pageIndex < pagination) requestAnimationFrame(loop);
+}
 requestAnimationFrame(loop);
-
 </script>
