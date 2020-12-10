@@ -24,6 +24,7 @@ add.bind(sub, 5, 3); // 这时，并不会返回 8
 add.bind(sub, 5, 3)(); // 调用后，返回 8
 add.apply(sub, [5, 3]);
 add.call(sub, 5, 3);
+// 个人理解：执行的还是bind apply call前面那个函数，只是this用的是它们后面那个所属的
 // e.g.2
 var foo = {
     name: 'joker',
@@ -35,7 +36,7 @@ var bar = {
     name: 'rose'
 }
 foo.showName.call(bar);
-
+// 个人理解： 执行的其实还是foo方法，但是上下文this变成了bar的
 ```
 
 ## bind
