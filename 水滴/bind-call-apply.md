@@ -159,6 +159,6 @@ case1: dom节点：
 let div = document.getElementsByTagName('div');
 console.log(div); // HTMLCollection(3) [div.div1, div.div1, div.div1] 里面包含length属性
 
-let arr2 = Array.prototype.slice.call(div);
-console.log(arr2); // 数组 [div.div1, div.div1, div.div1]
+let arr2 = Array.prototype.slice.call(div, 1);
+console.log(arr2); // 数组 [div.div1, div.div1]
 ```

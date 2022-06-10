@@ -1,0 +1,177 @@
+<html>
+    <head>
+        <script src="./index.js"></script>
+        <!-- <script src="./面试题.js"></script> -->
+    </head>
+    <body>
+        <!-- 3dfasdf
+        <a href="123">321</a>
+        <a href="456">654</a>
+        <button>1</button>
+        <button>2</button>
+        <div class="div1">1</div>
+        <div class="div1">2</div>
+        <div class="div1">3</div> -->
+
+        <!-- <span>------以下为tab示例代码-------</span> -->
+        <main class="tab tab1">
+            <nav>
+                <a href="javascript:;">快乐</a> 
+                <!---javascript:协议作为a的href属性的时候不仅会导致不 必要的触发window.onbeforeunload事件，在IE里面更会使gif动画图片停止播放。W3C标准不推荐在href里面执行 javascript语句-->
+                <a href="javascript:;">悲伤</a>
+            </nav>
+            <section>1</section>
+            <section>2</section>
+        </main>
+        <main class="tab tab2">
+            <nav>
+                <span>快乐</span>
+                <span>悲伤</span>
+            </nav>
+            <section>1</section>
+            <section>2</section>
+        </main>
+    </body>
+</html>
+<script>
+// // DOM节点（伪数组）借用数组方法
+// let btns = document.querySelectorAll("button");
+// console.log("btns::: ", btns);
+// // 想用filter方法 dom咩有
+// console.dir(Array)
+// // 注意filter方法不修改原值 返回后的是一个新数组；filter()方法的参数就是一个回调
+// let _btn = Array.prototype.filter.call(btns, (a,i )=> {console.log(a,i, a.innerHTML);return a.innerHTML == '2'})
+// let _btn1 = [].find.call(btns, (a,i )=> {console.log(a,i, a.innerHTML);return a.innerHTML == '2'})
+// console.log("_btn::: ", _btn, _btn1);
+
+// ---------slice----------
+// let div = document.getElementsByTagName('div');
+// console.log(div); // HTMLCollection(3) [div.div1, div.div1, div.div1] 里面包含length属性
+// let arr2 = Array.prototype.slice.call(div, 1);
+// console.log(arr2); 
+// function add (a, b) {
+//     console.log("a+b::: ", a+b);
+//     return a + b;
+// }
+
+// function sub (a, b) {
+//     console.log("a-b::: ", a-b);
+//     return a - b;
+// }
+// add.bind(sub, 5, 3); // 这时，并不会返回 8
+// add.bind(sub, 5, 3)(); // 调用后，返回 8
+// add.apply(sub, [5, 3]);
+// add.call(sub, 5, 3);
+
+// // --------tab选项卡显示效果基类开发
+// function extend(sub, sup) {
+//     sub.prototype = Object.create(sup.prototype);
+//     Object.defineProperty(sub.prototype, 'constructor', {
+//         value: sub,
+//         enumerable: false
+//     })
+// }
+// function Animation() {};
+// Animation.prototype.show = function() {
+//     this.style.display = 'block'; // 不是true 真假是在Vue element中用的
+// }
+// Animation.prototype.hide = function() {
+//     this.style.display = 'none'; // 不是false 真假是在Vue element中用的
+// }
+// Animation.prototype.background = function(color) {
+//     this.style.backgroundColor = color;
+// }
+
+// // function Tab(el, link = 'a', section = 'section') {
+// function Tab(args) {
+//     args = Object.assign({el: null, link: 'a', section: 'section', cb: null}, args)
+//     // 或者 this.args = Object.assign({el: null, link: 'a', section: 'section', cb: null}, args)
+//     console.log(args)
+//     // dom links sections都是独立的，所以不用写在prototype里
+//     this.tabs = document.querySelector(args['el']);
+//     // 用this.tabs.querySelectorAll('a')一样的
+//     this.links = document.querySelector(args['el']).querySelectorAll(args['link']);
+//     this.sections = this.tabs.querySelectorAll(args['section']);
+//     // console.log(this.links, this.sections)
+//     this.callback = args['cb'];
+// }
+// extend(Tab, Animation);
+// Tab.prototype.run = function(){
+//     this.bindEvent();
+//     // 初始化时重置
+//     this.reset();
+//     this.action(0);
+// };
+// Tab.prototype.bindEvent = function() {
+//     console.dir(Tab)
+//     this.links.forEach((v, i) => {
+//         // console.log(v, i)
+//         // 注意 a标签href需加javascript:;为了防止不必要的事件触发
+//         // 为了防止嵌套
+//         v.addEventListener('click',  _ => {
+//             this.reset();
+//             console.log('click')
+//             this.action(i); // 闭包？？❓
+//             if(this.callback) this.callback();
+//         }) 
+//     })
+// }
+// Tab.prototype.action = function(index) {
+//     // this.background.call(el, 'rgb(255, 174, 127)');
+//     this.background.call(this.links[index], 'rgb(255, 174, 127)');
+//     this.show.call(this.sections[index]);
+
+// }
+// Tab.prototype.reset = function() {
+//     console.log('reset');
+//     [].forEach.call(this.links, link => {
+//         this.background.call(link, 'rgb(158, 162, 165)')
+//     });
+//     Array.prototype.forEach.call(this.sections, section => {
+//         console.log(section)
+//         this.hide.call(section)
+//     })
+// }
+// // new Tab('.tab2', 'span').run();
+// // new Tab('.tab1').run();
+// new Tab({el: '.tab2', link: 'span', cb: ()=>{console.log('callback')}}).run();
+// // new Tab({el: '.tab1'}).run();
+</script>
+<style>
+.main {
+    position: relative;
+}
+.tab1 {
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+.tab2 {
+    position: absolute;
+    left: 200px;
+    top: 0;
+}
+.tab section {
+    position: absolute;
+    top: 30px;
+    left: 0;
+}
+.tab a {
+    display: inline-block;
+    width: 50px;
+    height: 20px;
+    background-color:rgb(255, 174, 127);
+    text-decoration: none;
+}
+.tab a:nth-last-child(1) {
+    background-color: rgb(158, 162, 165);
+}
+.tab section {
+    background-color: aliceblue;
+    width: 100px;
+    height: 50px;
+}
+.tab section:nth-child(1) {
+    display: none;
+}
+</style>
