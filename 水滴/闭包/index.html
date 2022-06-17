@@ -1,0 +1,75 @@
+<html>
+    <script src="index.js"></script>
+    <script src="面试题.js"></script>
+
+    <button>按钮1</button>
+    <!-- <button>按钮2</button>
+    <div desc="第一个元素">今天星期几</div>
+    <div desc="第二个元素">今天星期四</div> -->
+
+</html>
+<script>
+// let btns = document.querySelectorAll('button');
+// console.log(btns);
+// function move(btn) {
+//     // let left = 1; //每次点击都会产生一个新的如图所示的空间， 图片地址: ./动画不抖动了.png
+//     // 上述的副作用是会越来越快，因为如图所示 setInterval每次点击都有一个新的产生，比如点击10次的话，等于是100/10,10秒就执行了一个
+//     // 解决方案是 让setInterval在接下来的点击中不要再执行，图片地址: ./动画不会越点越.png
+//     // let left = 1;
+//     // let isInterval = false;
+//     // 再优化 因为上述有两个全局变量
+//     let bind = false;
+//     btn.addEventListener('click', () => {
+//         // if(!isInterval) {
+//         //     isInterval = true;
+//         //     // let left = 1; // 图片地址: ./动画抖动的原因.png
+//         //     // console.log('click')
+//         //     setInterval(()=>{
+//         //         btn.style.left = left++ + 'px'
+//         //     }, 100)
+//         // }
+//         // 下面优化的示意图片地址: ./优化动画点击.png
+//         if(!bind){
+//             // bind = true; 或者直接接受setInterval的返回值，setInterval返回序号
+//             let left = 1;
+//             bind = setInterval(() => {
+//                 btn.style.left = left++ + 'px'
+//             }, 100)
+//             console.log(bind)
+//         }
+//     })
+// }
+// btns.forEach(btn => move(btn))
+</script>
+<!-- <script>
+let divs = document.querySelectorAll('div');
+// divs.forEach(div => {
+//     div.addEventListener('click', () => {
+//         console.log(div.getAttribute('desc'));
+//         console.log(div);
+//     })
+// })
+divs.forEach(div => {
+    let desc = div.getAttribute('desc');
+    div.addEventListener('click', () => {
+        console.log(1)
+        console.log(desc);
+        console.log(div); // 搞不懂，为什么这里div为null,那如何addEventListener的呢
+    })
+    console.log(2)
+    console.log(div)
+    div = null;
+    console.log(div)
+})
+</script> -->
+
+<style>
+button:nth-child(1) {
+    position: absolute;
+    left: 0;
+}
+button:nth-child(2) {
+    position: absolute;
+    left: 100px;
+}
+</style>
