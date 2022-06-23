@@ -39,9 +39,43 @@ foo.showName.call(bar);
 // 个人理解： 执行的其实还是foo方法，但是上下文this变成了bar的
 ```
 
+## 原理分析
+
+```js
+// 构造函数中的this默认是一个空对象，然后构造函数处理后把这个空对象变得有值。
+
+function User(name) {
+  this.name = name;
+}
+let hd = new User("后盾人");
+// 可以改变构造函数中的空对象，即让构造函数 this 指向到另一个对象。
+
+function User(name) {
+  this.name = name;
+}
+
+let hdcms = {};
+User.call(hdcms, "HDCMS");
+console.log(hdcms.name); //HDCMS
+```
+
 ## bind
 
 - 注意：bind 方法的***返回值是函数***，并且需要稍后调用，才会执行。而 apply 和 call 则是立即调用。
+- bind 是复制函数形为会返回新函数
+- 绑定参数注意事项
+
+```js
+function hd(a, b) {
+  return this.f + a + b;
+}
+
+//使用bind会生成新函数
+let newFunc = hd.bind({ f: 1 }, 3);
+
+//1+3+2 参数2赋值给b即 a=3,b=2
+console.log(newFunc(2));
+```
 
 ```js
 let obj = {name: 'tony'};
@@ -159,6 +193,19 @@ case1: dom节点：
 let div = document.getElementsByTagName('div');
 console.log(div); // HTMLCollection(3) [div.div1, div.div1, div.div1] 里面包含length属性
 
-let arr2 = Array.prototype.slice.call(div);
-console.log(arr2); // 数组 [div.div1, div.div1, div.div1]
+let arr2 = Array.prototype.slice.call(div, 1);
+console.log(arr2); // 数组 [div.div1, div.div1]
+
+
+quicksort(array) {
+  if (array.length < 2) return array;
+    let pivot = array[0]
+    let less = for(i in array[1])  if i <= pivot
+
+    let greater = [i for i in array[1:] if i > pivot]
+
+    return quicksort(less) + [pivot] + quicksort(greater)
+}
+quicksort([10, 5, 2, 3])
+
 ```
