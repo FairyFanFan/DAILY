@@ -223,3 +223,32 @@ statusIds(newVal, oldVal) {
 - v-cloak等编译完再渲染（v-if=""dom上的这种情况) [link](v-cloak等编译完再渲染（v-if=""dom上的这种情况)
 
 - [JavaScript系列——JavaScript同步、异步、回调执行顺序之经典闭包setTimeout面试题分析](https://segmentfault.com/a/1190000008922457)
+
+## onfocus addEventListener 两者都可拿到当前focus给的指示
+
+- onfocus html本身就有的属性，不会冒泡
+
+   - <input type="text" onfocus="this.value=''" value="Blabla">
+
+- object.addEventListener("focus", myFocusFunction) 事件委派
+
+## join会把空数组变成字符串，不管是用什么符号进行连接
+
+```JS
+[].map(i => i.toFixed(2))
+//  []
+[].map(i => i.toFixed(2)).join(',')
+// ""
+```
+## unshift 数组头部添加数据，修改的是原数据
+
+## 以下是查看vue版本号除了去查看package.json文件外
+查看vue-cli版本号
+
+vue -V
+全局查看vue版本号
+
+npm info vue
+局部（当前项目）查vue版本号
+
+npm list vue version
