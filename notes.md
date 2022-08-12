@@ -252,3 +252,5 @@ npm info vue
 局部（当前项目）查vue版本号
 
 npm list vue version
+
+## [可配置表单](https://mp.weixin.qq.com/s/VYRaQfPB_8M1hqk2b_apNQ)
